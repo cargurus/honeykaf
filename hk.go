@@ -79,10 +79,9 @@ func run(options GlobalOptions) {
 	var linesChans []chan string
 
 	linesChans, err := kafkatail.GetChans(ctx, options.Kafka)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{"err": err}).Fatal(
-			"Error occurred while trying to tail logfile")
-	}
+
+	// handle errors if there are any
+	logrus.WithFields(logrus.Fields{"err": <-err}).Fatal("Error occurred while trying to tail logfile")
 
 	// set up our signal handler and support canceling
 	go func() {
