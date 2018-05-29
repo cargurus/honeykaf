@@ -3,7 +3,10 @@ package kafkatail
 import (
 	"context"
 	"github.com/Shopify/sarama"
+	"github.com/cenk/backoff"
+	"github.com/rubyist/circuitbreaker"
 	"log"
+	"time"
 )
 
 type Options struct {
@@ -55,17 +58,31 @@ func GetChans(ctx context.Context, options Options) ([]chan string, chan error) 
 			}
 		}()
 
-	ConsumerLoop:
+		// TODO: Make these configurable
+		expBackoff := backoff.NewExponentialBackOff()
+		expBackoff.MaxInterval = 30 * time.Second
+		expBackoff.MaxElapsedTime = 5 * time.Minute
+
+		cb := circuit.NewConsecutiveBreaker(10)
+		cb.BackOff = expBackoff
+
 		for {
-			select {
-			case err := <-partitionConsumer.Errors():
-				log.Printf("Error at offset %d in topic %s: %v\n",
-					partitionConsumer.HighWaterMarkOffset()-1, options.Topic, err)
-				errCh <- err
-			case msg := <-partitionConsumer.Messages():
-				lines <- string(msg.Value)
-			case <-ctx.Done():
-				break ConsumerLoop
+			if cb.Ready() {
+				select {
+				case err := <-partitionConsumer.Errors():
+					log.Printf("Error at offset %d in topic %s: %v\n",
+						partitionConsumer.HighWaterMarkOffset()-1, options.Topic, err)
+					cb.Fail()
+
+					if cb.Tripped() && expBackoff.NextBackOff() == backoff.Stop {
+						errCh <- err
+					}
+				case msg := <-partitionConsumer.Messages():
+					cb.Success()
+					lines <- string(msg.Value)
+				case <-ctx.Done():
+					return
+				}
 			}
 		}
 	}()
