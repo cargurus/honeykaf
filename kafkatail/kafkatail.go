@@ -98,10 +98,10 @@ func GetChans(ctx context.Context, options Options) ([]chan string, error) {
 				log.Println("Maximum number of retries exceeded, failing")
 			} else {
 				select {
-					case <- ctx.Done():
-						break
-				case <- breaker.Subscribe():
-						continue
+				case <-ctx.Done():
+					break
+				case <-breaker.Subscribe():
+					continue
 				}
 			}
 		}
