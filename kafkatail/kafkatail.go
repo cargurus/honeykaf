@@ -96,6 +96,7 @@ func GetChans(ctx context.Context, options Options) ([]chan string, error) {
 				}
 			} else if expBackoff.NextBackOff() == backoff.Stop {
 				log.Println("Maximum number of retries exceeded, failing")
+				break
 			} else {
 				select {
 				case <-ctx.Done():
