@@ -34,10 +34,10 @@ before_install:
     - sudo apt-get install -y build-essential rpm
 
 install:
-        - true # HACK: fixes travis-CI lack of support for vendor/ + godeps
-        - dep ensure
+    - true # HACK: fixes travis-CI lack of support for vendor/ + godeps
+    - dep ensure
 
 deploy:
-    - on:
-        - branch: master
-        - condition: false # change when we figure out where to drop artifacts
+    on:
+      branch: master
+      condition: false # change when we figure out where to drop artifacts
