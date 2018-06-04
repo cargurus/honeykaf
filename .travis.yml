@@ -14,6 +14,9 @@ dist: trusty
 go:
     - 1.9
 
+env:
+    - DEP_VERSION="0.4.1"
+
 script:
     - set -e
 # Run tests
@@ -22,9 +25,14 @@ script:
     - go install -ldflags "-X main.BuildID=1.${TRAVIS_BUILD_NUMBER}" github.com/cargurus/honeykaf/...
 
 before_install:
-    # Install fpm for deb/rpm package building
+# Download the binary to bin folder in $GOPATH
+    - curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
+# Make the binary executable
+    - chmod +x $GOPATH/bin/dep
+# Install fpm for deb/rpm package building
     - sudo apt-get -qq update
     - sudo apt-get install -y build-essential rpm
 
 install:
         - true # HACK: fixes travis-CI lack of support for vendor/ + godeps
+        - dep ensure
