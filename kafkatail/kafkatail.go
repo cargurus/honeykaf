@@ -86,7 +86,7 @@ func GetChans(ctx context.Context, options Options) ([]chan string, error) {
 				if msg != nil {
 					partitionRecords <- string(msg.Value)
 					lastSuccessOffset = max(lastSuccessOffset, msg.Offset)
-					recordsConsumed += 1
+					recordsConsumed++
 				}
 				if !ok {
 					// Kafka client bailed on us; start clean up, drain messages, then bail out.
@@ -94,7 +94,7 @@ func GetChans(ctx context.Context, options Options) ([]chan string, error) {
 					for range partitionConsumer.Messages() {
 						partitionRecords <- string(msg.Value)
 						lastSuccessOffset = max(lastSuccessOffset, msg.Offset)
-						recordsConsumed += 1
+						recordsConsumed++
 					}
 					return
 				}
@@ -111,9 +111,8 @@ func GetChans(ctx context.Context, options Options) ([]chan string, error) {
 func max(a int64, b int64) int64 {
 	if a < b {
 		return b
-	} else {
-		return a
 	}
+	return b
 }
 
 func makeClientId(topic string, partition int32) string {
