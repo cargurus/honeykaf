@@ -3,12 +3,6 @@ os:
 
 language: go
 
-addons:
-    artifacts:
-        debug: true
-        paths:
-        - $GOPATH/bin
-
 dist: trusty
 
 go:
@@ -38,9 +32,10 @@ install:
     - dep ensure
 
 deploy:
+    provider: releases
+    file: honeykaf
+    skip_cleanup: true
     on:
+      repo: cargurus/honeykaf
       branch: master
-      condition: false # change when we figure out where to drop artifacts
-
-addons:
-  artifacts: false
+      tags: true
