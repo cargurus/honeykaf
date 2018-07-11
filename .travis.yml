@@ -36,9 +36,8 @@ install:
 deploy:
   provider: releases
   api_key: $RELEASES_API_KEY_SECURE
-  file: honeykaf
+  file: $GOPATH/bin/honeykaf
   skip_cleanup: true
-  file_glob: true
   draft: $RELEASES_DRAFT
   tag_name: $TRAVIS_TAG
   on:
