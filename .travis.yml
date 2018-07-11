@@ -10,6 +10,7 @@ go:
 
 env:
   - DEP_VERSION="0.4.1"
+  - RELEASES_DRAFT=false
 
 script:
   - set -e
@@ -33,9 +34,9 @@ install:
 
 deploy:
   provider: releases
-  api_key:
-    secure: ${RELEASES_API_KEY_SECURE}
-  file: honeykaf
+  api_key: $RELEASES_API_KEY_SECURE
+  file: "honeykaf"
+  draft: $RELEASES_DRAFT
   skip_cleanup: true
   on:
     repo: cargurus/honeykaf
