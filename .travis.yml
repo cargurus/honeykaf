@@ -9,7 +9,9 @@ go:
   - 1.9
 
 env:
-  - DEP_VERSION="0.4.1"
+  global:
+    - DEP_VERSION="0.4.1"
+    - RELEASES_DRAFT=false
 
 script:
   - set -e
@@ -33,10 +35,11 @@ install:
 
 deploy:
   provider: releases
-  api_key:
-    secure: ${RELEASES_API_KEY_SECURE}
-  file: honeykaf
+  api_key: $RELEASES_API_KEY_SECURE
+  file: $GOPATH/bin/honeykaf
   skip_cleanup: true
+  draft: $RELEASES_DRAFT
+  tag_name: $TRAVIS_TAG
   on:
     repo: cargurus/honeykaf
     branch: master
