@@ -9,8 +9,9 @@ go:
   - 1.9
 
 env:
-  - DEP_VERSION="0.4.1"
-  - RELEASES_DRAFT=false
+  global:
+    - DEP_VERSION="0.4.1"
+    - RELEASES_DRAFT=false
 
 script:
   - set -e
